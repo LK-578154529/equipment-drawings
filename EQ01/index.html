@@ -58,6 +58,7 @@
             color: #333;
             border-bottom: 1px solid #eee;
             transition: background 0.2s;
+            cursor: pointer;
         }
         .drawing-item:last-child {
             border-bottom: none;
@@ -103,6 +104,63 @@
             color: #999;
             line-height: 1.8;
         }
+        
+        /* PDF 预览弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #333;
+            color: white;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .modal-close {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .modal-body {
+            flex: 1;
+            overflow: hidden;
+        }
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -128,41 +186,41 @@
 
         <div class="drawing-list">
             
-            <a href="./电气原理图.pdf" target="_blank" class="drawing-item">
+            <div class="drawing-item" onclick="openPDF('电气原理图.pdf', '电气原理图')">
                 <div class="icon">📄</div>
                 <div class="drawing-info">
                     <h3>电气原理图</h3>
-                    <span>点击查看/下载</span>
+                    <span>主回路及控制回路</span>
                 </div>
                 <div class="arrow">›</div>
-            </a>
+            </div>
 
-            <a href="./接线图.pdf" target="_blank" class="drawing-item">
+            <div class="drawing-item" onclick="openPDF('接线图.pdf', '接线图')">
                 <div class="icon">🔌</div>
                 <div class="drawing-info">
                     <h3>接线图</h3>
-                    <span>点击查看/下载</span>
+                    <span>端子排接线详图</span>
                 </div>
                 <div class="arrow">›</div>
-            </a>
+            </div>
 
-            <a href="./IO分配表.pdf" target="_blank" class="drawing-item">
+            <div class="drawing-item" onclick="openPDF('IO分配表.pdf', 'IO分配表')">
                 <div class="icon">📊</div>
                 <div class="drawing-info">
                     <h3>I/O 分配表</h3>
-                    <span>点击查看/下载</span>
+                    <span>PLC输入输出点位</span>
                 </div>
                 <div class="arrow">›</div>
-            </a>
+            </div>
 
-            <a href="./元器件清单.pdf" target="_blank" class="drawing-item">
+            <div class="drawing-item" onclick="openPDF('元器件清单.pdf', '元器件清单')">
                 <div class="icon">📦</div>
                 <div class="drawing-info">
                     <h3>元器件清单</h3>
-                    <span>点击查看/下载</span>
+                    <span>BOM物料清单</span>
                 </div>
                 <div class="arrow">›</div>
-            </a>
+            </div>
 
         </div>
 
@@ -172,5 +230,54 @@
         </div>
 
     </div>
+
+    <!-- PDF 预览弹窗 -->
+    <div class="modal" id="pdfModal">
+        <div class="modal-header">
+            <span class="modal-title" id="modalTitle">图纸预览</span>
+            <div>
+                <a class="download-btn" id="downloadBtn" href="" download>下载</a>
+                <button class="modal-close" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <iframe id="pdfViewer" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openPDF(filename, title) {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            const modalTitle = document.getElementById('modalTitle');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            modalTitle.textContent = title;
+            viewer.src = './' + filename;
+            downloadBtn.href = './' + filename;
+            modal.classList.add('active');
+            
+            // 禁止背景滚动
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            
+            modal.classList.remove('active');
+            viewer.src = '';
+            
+            // 恢复背景滚动
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 点击背景关闭
+        document.getElementById('pdfModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
